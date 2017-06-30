@@ -179,6 +179,3 @@ Function Unstow-Item {
         }
     }
 }
-
-Export-ModuleMember -Function Stow-Item
-Export-ModuleMember -Function Unstow-Item

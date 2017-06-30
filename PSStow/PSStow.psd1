@@ -14,7 +14,7 @@
 RootModule = 'PSStow.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.11'
+ModuleVersion = '0.12'
 
 # ID used to uniquely identify this module
 GUID = 'f6dd8378-e8ee-4cd0-8f23-462c09397a57'
