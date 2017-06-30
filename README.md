@@ -2,7 +2,7 @@
 
 This PowerShell module provides the ability to stow away an item, and to then unstow that item.  By "stowing", we mean moving the item away for safekeeping, and then to unstow means to restore it to its original location.
 
-In some networked environments, there is a size limit on your `USERPROFILE` directory.  You can keep its size down by stowing directories when you log off and then unstow these directories when you log on.
+In some networked environments, there is a size limit on your `USERPROFILE` directory.  You can keep its size down by stowing directories before you log off and then unstow these directories after you log in.
 
 ## Installation
 
@@ -10,7 +10,11 @@ In some networked environments, there is a size limit on your `USERPROFILE` dire
 
 You will need PowerShellGet.  It is included in Windows 10 and [WMF5](http://go.microsoft.com/fwlink/?LinkId=398175). If you are using PowerShell V3 or V4, you will need to install [PowerShellGet](https://www.microsoft.com/en-us/download/details.aspx?id=49186).
 
-After installing PowerShellGet, you can simply run `Install-Module PSStow`.
+After installing PowerShellGet, you can simply run
+
+```powershell
+Install-Module PSStow -Scope CurrentUser
+```
 
 ### Installing from GitHub
 
