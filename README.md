@@ -58,27 +58,27 @@ Typically there are a set of offending User Profile directories that are too lar
 $global:stowStore =  "C:\_store";
 
 $global:userProfileDirsToStow = @(
-		"$env:LOCALAPPDATA\Google\Chrome\"                # Chrome dir settings
-	, "$env:LOCALAPPDATA\Microsoft\VisualStudio\"      # Visual Studio settings (different versions)
+    "$env:LOCALAPPDATA\Google\Chrome\"               # Chrome dir settings
+  , "$env:LOCALAPPDATA\Microsoft\VisualStudio\"      # Visual Studio settings (different versions)
 
-	, "$env:USERPROFILE\.nuget\"                       # nuget cache
-	, "$env:USERPROFILE\.android\"                     # visual studio's android files
+  , "$env:USERPROFILE\.nuget\"                       # nuget cache
+  , "$env:USERPROFILE\.android\"                     # visual studio's android files
 
-	, "$env:LOCALAPPDATA\Microsoft\SQL Server Management Studio\" # SSMS settings (different versions)
+  , "$env:LOCALAPPDATA\Microsoft\SQL Server Management Studio\" # SSMS settings (different versions)
 
-	, "$env:LOCALAPPDATA\atom"                         # atom program dir
+  , "$env:LOCALAPPDATA\atom"                         # atom program dir
 
-	, "$env:USERPROFILE\.atom\"                        # atom settings dir
+  , "$env:USERPROFILE\.atom\"                        # atom settings dir
 
-	, "$env:LOCALAPPDATA\ApexSQL"                      # ApexSQL settings dir
+  , "$env:LOCALAPPDATA\ApexSQL"                      # ApexSQL settings dir
 );
 
 Function stowUserProfileDirs {
-	$global:userProfileDirsToStow | Stow-Item -Store $global:stowStore
+  $global:userProfileDirsToStow | Stow-Item -Store $global:stowStore
 }
 
 Function unstowUserProfileDirs {
-	$global:userProfileDirsToStow | Unstow-Item -Store $global:stowStore
+  $global:userProfileDirsToStow | Unstow-Item -Store $global:stowStore
 }
 ```
 
