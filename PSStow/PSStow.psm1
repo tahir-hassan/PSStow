@@ -22,7 +22,11 @@ Function GetAbsolutePath {
 
 Function RemoveRoot([string]$Path) {
     $root = GetRoot $Path
-    $Path.Replace($root, '');
+    $Path.Replace($root, '') -replace '^(/|\\)','';
+}
+
+Function CombinePath {
+    [IO.Path]::Combine(([string[]]$args));
 }
 
 Function ValidatePathStoreRelationship {
@@ -45,16 +49,40 @@ Function ValidatePathStoreRelationship {
     }
 }
 
-Function GetAbsoluteStorePath {
+Function GetAbsoluteStoragePath {
     param([string]$Path, $Store) 
+   
+    # if you have a store path like
+    # C:\MyStore 
+    # and an item
+    # C:\Users\th203\hello\world
+    # you get 
+    # C:\MyStore\-C\Users\th203\hello\world
+    # if there was a directory in the D:\ drive:
+    # D:\Java\FurtherJava
+    # you get 
+    # C:\MyStore\-D\Java\FurtherJava
 
-    # e.g. given a store C:\Dirs\MyStore and path to safeStore like C:\Users\th203\hello\world, you get
-    # C:\Dirs\MyStore\Users\th203\hello\world
-    return [IO.Path]::Combine((GetAbsolutePath $Store), (RemoveRoot (GetAbsolutePath $Path)));
+    $absPath = GetAbsolutePath $Path;
+
+    $rootDir = "";
+
+    $absPathRoot = [IO.Path]::GetPathRoot($absPath)
+    if ($absPathRoot -match '^[a-z]+:\\$') {
+        $driveLetter = $absPathRoot -replace '^([a-z]+):\\$','$1';
+        $rootDir = "-$driveLetter";
+    } else {
+        $rootDir = ($absPathRoot -replace '^(//|\\\\)','--') -replace '/','\'
+    }
+
+    CombinePath (GetAbsolutePath $Store) ($rootDir) (RemoveRoot $absPath);
 }
 
 Function Stow-Item {
-    param([Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)][string[]]$Path, [Parameter(Mandatory=$true)][string]$Store)
+    param(
+        [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)][string[]]$Path, 
+        [Parameter(Mandatory=$true,Position=1)][string]$Store
+    )
     
     process {
         foreach ($Item in $Path) {
@@ -75,7 +103,7 @@ Function Stow-Item {
             }
             
             try {
-                $fullStorePath = GetAbsoluteStorePath $Item $Store;
+                $fullStorePath = GetAbsoluteStoragePath $Item $Store;
 
                 if (Test-Path $fullStorePath) {
                     return &$createResult $false "There is already a folder $fullStorePath"  
@@ -86,7 +114,11 @@ Function Stow-Item {
                 $storeParent = Split-Path $fullStorePath;
                 if (-not (Test-Path $storeParent)) {
                     # create the parent directory if it does not exist
-                    mkdir $storeParent -ErrorAction Stop | Out-Null
+                    try {
+                        mkdir $storeParent -ErrorAction Stop | Out-Null
+                    } catch {
+                        return &$createResult $false "Could not create directory '$storeParent': $($_.Exception.Message)" 
+                    }
                 }
                 
                 Move-Item $Item $storeParent -ErrorAction Stop
@@ -100,7 +132,10 @@ Function Stow-Item {
 }
 
 Function Unstow-Item {
-    param([Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)][string[]]$Path, [Parameter(Mandatory=$true)][string]$Store)
+    param(
+        [Parameter(Mandatory=$true,Position=0,ValueFromPipeline=$true)][string[]]$Path,
+        [Parameter(Mandatory=$true,Position=1)][string]$Store
+    )
 
     process {
         foreach ($Item in $Path) {
@@ -113,7 +148,7 @@ Function Unstow-Item {
             # given $store C:\_data\Store
             # and a $Item C:\mydata\myjavadata
             # $storeLocation will be  C:\_data\Store\mydata\myjavadata
-            $storeLocation = GetAbsoluteStorePath $Item $Store;
+            $storeLocation = GetAbsoluteStoragePath $Item $Store;
 
             $validationResult = ValidatePathStoreRelationship -Path $Item -Store $Store;
 
