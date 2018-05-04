@@ -73,7 +73,7 @@ Check the GitHub repository https://github.com/tahir-hassan/PSStow for more info
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = 'Stow-Item','Unstow-Item'
+FunctionsToExport = 'Stow-Item','Unstow-Item','Get-AbsoluteStowStoragePath'
 
 # Cmdlets to export from this module
 CmdletsToExport = ''

@@ -49,7 +49,7 @@ Function ValidatePathStoreRelationship {
     }
 }
 
-Function GetAbsoluteStoragePath {
+Function Get-AbsoluteStowStoragePath {
     param([string]$Path, $Store) 
    
     # if you have a store path like
@@ -103,7 +103,7 @@ Function Stow-Item {
             }
             
             try {
-                $fullStorePath = GetAbsoluteStoragePath $Item $Store;
+                $fullStorePath = Get-AbsoluteStowStoragePath $Item $Store;
 
                 if (Test-Path $fullStorePath) {
                     return &$createResult $false "There is already a folder $fullStorePath"  
@@ -148,7 +148,7 @@ Function Unstow-Item {
             # given $store C:\_data\Store
             # and a $Item C:\mydata\myjavadata
             # $storeLocation will be  C:\_data\Store\mydata\myjavadata
-            $storeLocation = GetAbsoluteStoragePath $Item $Store;
+            $storeLocation = Get-AbsoluteStowStoragePath $Item $Store;
 
             $validationResult = ValidatePathStoreRelationship -Path $Item -Store $Store;
 
